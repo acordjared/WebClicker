@@ -87,7 +87,7 @@ class Slides extends React.Component {
 getFilesList(){		
 		var storage = firebase.app().storage("gs://iclicker-web-c0d76.appspot.com");
 		var storageRef = storage.ref();
-		var listRef = storageRef.child("/uploadtest/"+this.props.match.params.courseID+"/");	
+		var listRef = storageRef.child("/uploads/"+this.props.match.params.courseID+"/");	
 		this.setState({
 			isLoaded: false
 		});		
