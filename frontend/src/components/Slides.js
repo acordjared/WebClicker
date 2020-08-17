@@ -15,6 +15,7 @@ import {fetchPoll} from "../firebaseApi";
 import {initFirebase} from "../firebaseApi";
 import Typography from "@material-ui/core/Typography";
 import './slideshow.css';
+import Clipboard from 'clipboard';
 
 	const styles = theme => ({
     appBarSpacer: theme.mixins.toolbar,
@@ -30,25 +31,25 @@ import './slideshow.css';
 
 
 
+
 function copyImage(){
+	
 	try{
 		var img=document.getElementById("currentImage");
-		if (window.getSelection().empty) { 
-			window.getSelection().empty();
-		} else if (window.getSelection().removeAllRanges) {  
+		
 			window.getSelection().removeAllRanges();
-		}
+		
 		var r = document.createRange();
 		r.setStartBefore(img);
 		r.setEndAfter(img);
-		r.selectNode(img);
+		//r.selectNode(img);
 		window.getSelection().addRange(r);
-		document.execCommand('Copy');
+		document.execCommand('copy');
 		window.getSelection().removeRange(r);
 		displayCopiedWindow();
 	}
 	catch(err5){
-	}
+	}	
 }
 
 function displayCopiedWindow() {
@@ -90,7 +91,7 @@ getFilesList(){
 			let tempArray=[];
 			folderRef.listAll().then(res2 => {
 			  res2.items.forEach(itemRef => {
-				  itemRef.getDownloadURL().then(function(url) {tempArray.push(url.toString());}).catch(function(error) {});
+				  itemRef.getDownloadURL().then(function(url) {tempArray.push(url);}).catch(function(error) {});
 			  }); 
 			}).catch(function(error) {});
 			let newArray = [...this.state.imgUrls];
@@ -301,8 +302,7 @@ handleShowSlides = () => {
 	}
 	
 	
-	getCurrentImage = (currentFolder, currentScreenshot) =>{
-		
+	getCurrentImage = (currentFolder, currentScreenshot) =>{	
 		currentScreenshot+=1;
 		//console.log(imgUrls.length+"  "+imgUrls[this.state.currentFolder]);
 		currentFolder=this.state.currentFolderMapped[currentFolder-1];
@@ -326,9 +326,43 @@ handleShowSlides = () => {
 		}
 		catch(err) {
 			return null;	
-		}
-		
+		}	
 	}
+	
+	downloadCurrentImage(){	
+			var ref=document.getElementById("currentImage").src;
+			console.log(ref);
+			var reff=ref.substring(0, ref.indexOf('.jpg')+4);
+			var storage = firebase.app().storage("gs://iclicker-web-c0d76.appspot.com");
+			var httpsReference = storage.refFromURL(reff);
+			httpsReference.getDownloadURL().then(function(url) {
+				console.log(url);
+			  var xhr = new XMLHttpRequest();
+			  xhr.responseType = 'blob';
+			  xhr.onload = function(event) {
+				  
+				var blob = xhr.response;
+				var blobUrl = URL.createObjectURL(blob);
+				var link = document.createElement("a");
+				link.setAttribute("download", "download.jpg");
+				link.setAttribute("href", blobUrl);
+				link.setAttribute("target", "_blank");
+				link.style.visibility = 'hidden';
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+    
+				
+			  };
+			  xhr.open('GET', url);
+			  xhr.send();
+			  console.log("At end");
+			}).catch(function(error) {
+			});	
+	}
+	
+	
+	
 	updateFolderNum(){
 		let lectArray= new Array();
 			try{
@@ -396,7 +430,7 @@ handleShowSlides = () => {
 						
 						<div className="fourButton">
 							<button onClick={this.handleHideSlides} id="show_hide">{this.getFileStatus(this.state.isLoaded, "Hide Slides")}</button>
-							<button onClick={this.copyImageToClipboard}>Copy To Clipboard</button>
+							<button onClick={this.downloadCurrentImage}>Download Image</button>
 							<button onClick={this.toLastSlideOfSession}>Go To Last Slide</button>
 							<button onClick={this.toCurrentSlide}>Go To Current Slide</button>
 						</div>
