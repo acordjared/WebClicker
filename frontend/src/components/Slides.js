@@ -119,13 +119,12 @@ getStats(){
 	}
 }
 handleShowSlides = () => {
-	
 		try {
 			//getFilesList(this.props.match.params.courseID);	
 			this.setState({
 			  isActive: true,
-			  currentImageIndex: 0,
-			  currentFolder:1
+			  //currentImageIndex: 0,
+			  //currentFolder:1
 			});
 		}
 		catch(err) { 
@@ -134,11 +133,13 @@ handleShowSlides = () => {
 	  };
 
   handleHideSlides = () => {
+	  this.clearList();
+		this.getFilesList();
 		try {
 			this.setState({
 			  isActive: false,
-			  currentImageIndex: 0,
-			  currentFolder:1
+			  //currentImageIndex: 0,
+			  //currentFolder:1
 			});
 		}
 		catch(err) {
