@@ -154,18 +154,20 @@ handleShowSlides = () => {
 		let currentFolder=this.state.currentFolderMapped[this.state.currentFolder-1];
 		try {
 			var folderNum=0;
-			try{
+			
 				for(var i=1; i<this.state.imgUrls.length; i++){
-					if(this.state.imgUrls[i][0].includes("2F"+currentFolder+"%")){
-						folderNum=i;		
-					}
+					try{
+						if(this.state.imgUrls[i][0].includes("2F"+currentFolder+"%")){
+							folderNum=i;		
+						}
+					}catch(err){}
 				}
-			}
-			catch(err){}
+			
+			
 			
 			const lastIndex = this.state.imgUrls[folderNum].length - 1;
 			const { currentImageIndex } = this.state;
-			const shouldResetIndex = currentImageIndex === 0;
+			const shouldResetIndex = currentImageIndex <= 0;
 			const index =  shouldResetIndex ? lastIndex : currentImageIndex - 1;
 			
 			this.setState({
@@ -212,7 +214,7 @@ handleShowSlides = () => {
 					}
 				}
 			}
-			catch(err){}
+			catch(err){folderNum++;}
 			let index = this.state.imgUrls[folderNum].length-1;
 			this.setState({
 				currentImageIndex: index,
@@ -229,18 +231,20 @@ handleShowSlides = () => {
 		let currentFolder=this.state.currentFolderMapped[this.state.currentFolder-1];
 		try {
 			var folderNum=0;
-			try{
+			
 				for(var i=1; i<this.state.imgUrls.length; i++){
-					if(this.state.imgUrls[i][0].includes("2F"+currentFolder+"%")){
-						folderNum=i;		
+					try{
+						if(this.state.imgUrls[i][0].includes("2F"+currentFolder+"%")){
+							folderNum=i;		
+						}
 					}
+					catch(err){}
 				}
-			}
-			catch(err){}
+			
 			
 			const lastIndex = this.state.imgUrls[folderNum].length - 1;
 			const { currentImageIndex } = this.state;
-			const shouldResetIndex = currentImageIndex === lastIndex;
+			const shouldResetIndex = currentImageIndex >= lastIndex;
 			const index =  shouldResetIndex ? 0 : currentImageIndex + 1;
 
 			this.setState({
@@ -309,14 +313,16 @@ handleShowSlides = () => {
 		currentFolder=this.state.currentFolderMapped[currentFolder-1];
 		try {
 			  var folderNum=0;
-			try{
+			
 				for(var i=1; i<this.state.imgUrls.length; i++){
-					if(this.state.imgUrls[i][0].includes("2F"+currentFolder+"%")){
-						folderNum=i;		
+					try{
+						if(this.state.imgUrls[i][0].includes("2F"+currentFolder+"%")){
+							folderNum=i;		
+						}
 					}
+					catch(err){}
 				}
-			}
-			catch(err){}
+			
 			var h=0;
 			for(var i=0; i<this.state.imgUrls[folderNum].length; i++){
 				if(this.state.imgUrls[folderNum][i].includes("screenshot"+currentScreenshot+".jpg")){
@@ -332,12 +338,12 @@ handleShowSlides = () => {
 	
 	downloadCurrentImage(){	
 			var ref=document.getElementById("currentImage").src;
-			console.log(ref);
+			//console.log(ref);
 			var reff=ref.substring(0, ref.indexOf('.jpg')+4);
 			var storage = firebase.app().storage("gs://iclicker-web-c0d76.appspot.com");
 			var httpsReference = storage.refFromURL(reff);
 			httpsReference.getDownloadURL().then(function(url) {
-				console.log(url);
+				//console.log(url);
 			  var xhr = new XMLHttpRequest();
 			  xhr.responseType = 'blob';
 			  xhr.onload = function(event) {
@@ -357,7 +363,7 @@ handleShowSlides = () => {
 			  };
 			  xhr.open('GET', url);
 			  xhr.send();
-			  console.log("At end");
+			  //console.log("At end");
 			}).catch(function(error) {
 			});	
 	}
@@ -368,20 +374,22 @@ handleShowSlides = () => {
 		let lectArray= new Array();
 			try{
 				for(var i=1; i<this.state.imgUrls.length; i++){
-					var pos=0;
-					let matches = this.state.imgUrls[i][0].match(/2F(\d+)%/g); 
-					matches[0]=matches[0].substring(1);
-					let n=matches[0].match(/\d+/g).map(Number);
-					let num=n[0];
-					//lectArray.push(num);
-					while(num>lectArray[pos]){
-						pos++;
-					}	
-					try{
-						lectArray.splice(pos, 0, num);	
-					}
-					catch(err){
-						lectArray.push(num);
+					if(this.state.imgUrls[i]!=0){
+						var pos=0;
+						let matches = this.state.imgUrls[i][0].match(/2F(\d+)%/g); 
+						matches[0]=matches[0].substring(1);
+						let n=matches[0].match(/\d+/g).map(Number);
+						let num=n[0];
+						//lectArray.push(num);
+						while(num>lectArray[pos]){
+							pos++;
+						}	
+						try{
+							lectArray.splice(pos, 0, num);	
+						}
+						catch(err){
+							lectArray.push(num);
+						}
 					}
 				}
 				this.setState({
