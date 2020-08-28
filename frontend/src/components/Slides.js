@@ -15,7 +15,6 @@ import {fetchPoll} from "../firebaseApi";
 import {initFirebase} from "../firebaseApi";
 import Typography from "@material-ui/core/Typography";
 import './slideshow.css';
-import Clipboard from 'clipboard';
 
 	const styles = theme => ({
     appBarSpacer: theme.mixins.toolbar,
